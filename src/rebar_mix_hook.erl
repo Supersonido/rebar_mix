@@ -38,11 +38,18 @@ do(State) ->
     EbinDirs = ebin_dirs(Apps, State),
     EbinDirsString = lists:flatten(lists:join(EbinDirs, ":")),
 
+    BaseDir = rebar_dir:base_dir(State),
+    OutDir = filename:join(BaseDir, "consolidated"),
+
+    %% in order to not require figuring out where Elixir lives we
+    %% shell out to elixir to run an elixir script. so the only
+    %% requirement is that elixir is in the path.
     case rebar_utils:sh("elixir rebar_mix_protocol_consolidation.exs",
                         [{cd, ScriptDir},
                          {return_on_error, true},
                          {use_stdout, true},
-                         {env, [{"REBAR_DEPS_EBIN", EbinDirsString}]}]) of
+                         {env, [{"REBAR_DEPS_EBIN", EbinDirsString},
+                                {"REBAR_PROTOCOLS_OUTDIR", OutDir}]}]) of
         {error, {127, _}} ->
             {error, {?MODULE, elixir_not_found}};
         {error, {_Code, _Error}} ->

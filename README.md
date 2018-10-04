@@ -1,26 +1,28 @@
 rebar_mix
 =====
 
-A rebar plugin
-
-Build
------
-
-    $ rebar3 compile
+A rebar plugin for building Elixir dependencies with mix.
 
 Use
 ---
 
 Add the plugin to your rebar config:
 
-    {plugins, [
-        { rebar_mix, ".*", {git, "git@host:user/rebar_mix.git", {tag, "0.1.0"}}}
-    ]}.
+``` erlang
+{plugins, [rebar_mix]}.
+{provider_hooks, [{post, [{compile, {mix, consolidate_protocols}}]}]}.
+```    
 
-Then just call your plugin directly in an existing application:
+The `consolidate_protocols` hook places beams in `_build/<profile>/consolidated` that will need to be included in a release when built. Using:
 
 
-    $ rebar3 rebar_mix
-    ===> Fetching rebar_mix
-    ===> Compiling rebar_mix
-    <Plugin Output>
+``` erlang
+{overlay, [{copy, "{{base_dir}}/consolidated", "releases/{{release_version}}/consolidated"}]}
+```
+
+And update your `vm.args.src` to include:
+
+``` erlang
+-pa releases/${REL_VSN}/consolidated
+```
+
