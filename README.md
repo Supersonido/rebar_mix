@@ -3,7 +3,11 @@ rebar_mix
 
 A rebar plugin for building Elixir dependencies with mix.
 
-Requires rebar3 3.7.0 or above.
+Requirements:
+
+* rebar3 3.7.0 or above
+* Elixir with [PR #8256](https://github.com/elixir-lang/elixir/pull/8256), unless your Elixir dependencies have no transitive compile time dependencies in which case any version 1.6.3 or above may work. 
+
 
 Use
 ---
