@@ -16,9 +16,13 @@ Add the plugin to your rebar config:
 
 ``` erlang
 {plugins, [rebar_mix]}.
-{provider_hooks, [{post, [{compile, {mix, consolidate_protocols}}]}]}.
+{provider_hooks, [
+  {pre,  [{compile, {mix, find_elixir_libs}}]},
+  {post, [{compile, {mix, consolidate_protocols}}]}
+]}.
 ```    
 
+The `find_elixir_libs` hook automatically adds Elixir libraries into load path, it requires `elixir` binary to be in the path.
 The `consolidate_protocols` hook places beams in `_build/<profile>/consolidated` that will need to be included in a release when built. Using:
 
 
