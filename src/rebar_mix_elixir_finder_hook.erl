@@ -36,7 +36,7 @@ do(State) ->
             {ok, State};
         false ->
             %% ask elixir to print it's core libs
-            case rebar_utils:sh(?ELIXIR_CMD, [{return_on_error, true}, {use_stdout, false}]) of
+            case rebar_mix_builder:sh(?ELIXIR_CMD, [{return_on_error, true}, {use_stdout, false}]) of
                 {error, {127, _}} ->
                     {error, {?MODULE, elixir_not_found}};
                 {error, {_Code, _Error}} ->
