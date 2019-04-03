@@ -2,7 +2,8 @@
 
 -export([init/1,
          do/1,
-         format_error/1]).
+         format_error/1,
+         process_elixir_lib_paths/1]).
 
 
 -define(PROVIDER, find_elixir_libs).
@@ -35,24 +36,42 @@ do(State) ->
         {file, _} ->
             {ok, State};
         false ->
-            %% ask elixir to print it's core libs
-            case rebar_mix_builder:sh(?ELIXIR_CMD, [{return_on_error, true}, {use_stdout, false}]) of
-                {error, {127, _}} ->
-                    {error, {?MODULE, elixir_not_found}};
-                {error, {_Code, _Error}} ->
-                    {error, {?MODULE, elixir_command_failed}};
-                {ok, Output} ->
-                    %% parse the output
-                    Output1 = string:trim(Output),
-                    LibPaths = string:split(Output1, "\n", all),
-                    code:add_paths(LibPaths),
-                    %% try to load elixir now
-                    case code:load_file(elixir) of
-                        {module, elixir} ->
-                            {ok, State};
-                        _Ret ->
-                            {error, {?MODULE, elixir_load_error}}
-                    end
+            process_elixir_lib_paths(State)
+    end.
+
+process_elixir_lib_paths(State) ->
+    case rebar_mix_builder:sh(?ELIXIR_CMD,[{return_on_error,true},{use_stdout,false}]) of
+        {error,{127,_}} ->
+            {error,{?MODULE,elixir_not_found}};
+        {error,{_Code,_Error}} ->
+            {error,{?MODULE,elixir_command_failed}};
+        {ok,Output} ->
+            %% parse the output
+            Output1 = string:trim(Output),
+            LibPaths = string:split(Output1,"\n",all),
+            code:add_paths(LibPaths),
+
+            %% Fix relx config to include elixir lib_dirs
+            State1 =case rebar_state:get(State,relx,[]) of
+                [] ->
+                    State;
+                Config ->
+                    NewConfig = case lists:keyfind(lib_dirs,1,Config) of
+                        {lib_dirs,OldLibPaths} ->
+                            lists:keyreplace(lib_dirs,1,Config,{lib_dirs,
+                                lists:usort(OldLibPaths ++ LibPaths)});
+                        false ->
+                            [{lib_dirs,LibPaths}] ++ Config
+                    end,
+                    rebar_state:set(State,relx,NewConfig)
+            end,
+
+            %% try to load elixir now
+            case code:load_file(elixir) of
+                {module,elixir} ->
+                    {ok,State1};
+                _Ret ->
+                    {error,{?MODULE,elixir_load_error}}
             end
     end.
 
