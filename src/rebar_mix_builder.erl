@@ -1,11 +1,12 @@
 -module(rebar_mix_builder).
 
 -export([build/1,
-         format_error/1]).
+         format_error/1,
+         sh/2]).
 
 build(AppInfo) ->
     AppDir = rebar_app_info:dir(AppInfo),
-    case rebar_utils:sh("elixir -pa \"../*/ebin\" -S mix compile --no-load-deps "
+    case sh("elixir -pa \"../*/ebin\" -S mix compile --no-load-deps "
                         "--no-deps-check --no-protocol-consolidation",
                         [{cd, AppDir},
                          {return_on_error, true},
@@ -27,3 +28,6 @@ format_error({mix_compile_failed, Name, _Error}) ->
     io_lib:format("Failed to compile application ~ts with mix", [Name]);
 format_error(Reason) ->
     io_lib:format("~p", Reason).
+
+sh(Command, Options) ->
+    rebar_utils:sh(Command, [{env, [{"ERL_FLAGS", ""}]} | Options]).
