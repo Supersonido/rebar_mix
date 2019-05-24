@@ -10,7 +10,8 @@
 -define(NAMESPACE, mix).
 -define(DEPS, []).
 
--define(ELIXIR_CMD, "elixir -e ':code.get_path |> Enum.filter(fn(p) -> String.contains?(List.to_string(p), \"/elixir/\") end) |> Enum.map(&IO.puts/1)'").
+% Finds Elixir's application directory
+-define(ELIXIR_CMD, "elixir -e \"IO.puts(:code.lib_dir(:elixir))\"").
 
 %% ===================================================================
 %% Public API
@@ -48,11 +49,17 @@ process_elixir_lib_paths(State) ->
         {ok,Output} ->
             %% parse the output
             Output1 = string:trim(Output),
-            LibPaths = string:split(Output1,"\n",all),
+            ElixirBase = filename:join(Output1, ".."),
+            {ok, Dirs} = file:list_dir(ElixirBase),
+            LibPaths = lists:filter(
+                fun filelib:is_dir/1,
+                [filename:join([ElixirBase, P, "ebin"]) || P <- Dirs]
+            ),
+
             code:add_paths(LibPaths),
 
             %% Fix relx config to include elixir lib_dirs
-            State1 =case rebar_state:get(State,relx,[]) of
+            State1 = case rebar_state:get(State,relx,[]) of
                 [] ->
                     State;
                 Config ->
