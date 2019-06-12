@@ -36,7 +36,7 @@ do(State) ->
     ScriptDir = filename:join(rebar_app_info:dir(P), "src"),
 
     EbinDirs = ebin_dirs(Apps, State),
-    EbinDirsString = lists:flatten(lists:join(EbinDirs, ":")),
+    EbinDirsString = lists:flatten(lists:join(":", EbinDirs)),
 
     BaseDir = rebar_dir:base_dir(State),
     OutDir = filename:join(BaseDir, "consolidated"),
