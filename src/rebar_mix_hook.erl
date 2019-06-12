@@ -35,7 +35,8 @@ do(State) ->
     {ok, P} = rebar_app_utils:find(<<"rebar_mix">>, Plugins),
     ScriptDir = filename:join(rebar_app_info:dir(P), "src"),
 
-    EbinDirs = ebin_dirs(Apps, State),
+    DepsDir = rebar_dir:deps_dir(State),
+    EbinDirs = ebin_dirs(Apps, DepsDir),
     EbinDirsString = lists:flatten(lists:join(":", EbinDirs)),
 
     BaseDir = rebar_dir:base_dir(State),
@@ -83,7 +84,7 @@ normalize(AppName) when is_list(AppName) -> AppName;
 normalize(AppName) when is_atom(AppName) -> atom_to_list(AppName);
 normalize(AppName) when is_binary(AppName) -> binary_to_list(AppName).
 
-ebin_dirs(Apps, State) ->
+ebin_dirs(Apps, DepsDir) ->
     lists:map(fun(App) ->
-                      io_lib:format("~ts/~ts/ebin", [rebar_dir:deps_dir(State), App])
+                      io_lib:format("~ts/~ts/ebin", [DepsDir, App])
               end, Apps).
