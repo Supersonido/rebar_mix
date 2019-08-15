@@ -75,10 +75,13 @@ process_elixir_lib_paths(State) ->
 
             %% try to load elixir now
             case code:load_file(elixir) of
-                {module,elixir} ->
-                    {ok,State1};
-                _Ret ->
-                    {error,{?MODULE,elixir_load_error}}
+                {module, elixir} ->
+                    {ok, State1};
+                {error, not_purged} ->
+                    %% already loaded?
+                    {ok, State1};
+                {error, Ret} ->
+                    {error, {?MODULE, {elixir_load_error, Ret}}}
             end
     end.
 
@@ -88,9 +91,8 @@ format_error({elixir_not_found, Name}) ->
 format_error({elixir_command_failed, Name}) ->
     io_lib:format("Elixir failed to execute command to print paths to it's library. ~ts. "
                   "Please check if command '~ts' works.", [Name, ?ELIXIR_CMD]);
-format_error({elixir_load_error, Name}) ->
-    io_lib:format("Elixir libraries were found but failed to load. ~ts. "
-                  "Please check if Elixir is builded properly.", [Name]);
-
+format_error({elixir_load_error, Error}) ->
+    io_lib:format("Elixir libraries were found but failed to load: ~p. "
+                  "Please check if Elixir is builded properly.", [Error]);
 format_error(Error) ->
     io_lib:format("~p", [Error]).
