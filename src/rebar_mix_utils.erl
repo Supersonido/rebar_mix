@@ -63,14 +63,14 @@ create_rebar_lock_from_mix(AppDir, Deps) ->
           {Name, {hex, App, Version, _, _, _, _}} ->
             case lists:member(to_string(Name), Deps) of
               true ->
-                Locks ++ [{Name, {iex_dep, App, Version}, 0}];
+                Locks ++ [{to_binary(Name), {iex_dep, to_binary(App), Version}, 0}];
               false ->
                 Locks
             end;
-          {Name, {git, URL, Hash, _}} ->
+          {Name, {git, URL, _, [Ref]}} ->
             case lists:member(to_string(Name), Deps) of
               true ->
-                Locks ++ [{Name, {iex_dep, URL, Hash}, 0}];
+                Locks ++ [{to_binary(Name), {iex_dep, URL, Ref}, 0}];
               false ->
                 Locks
             end;
@@ -121,9 +121,9 @@ add_elixir_to_build_path(State)->
 elixir_to_lock(Lock) ->
   Lock ++
     [
-     {elixir, {iex_dep, <<"elixir">>, <<"">>}, 0},
-     {logger, {iex_dep, <<"logger">>, <<"">>}, 0},
-     {mix, {iex_dep, <<"mix">>, <<"">>}, 0}
+     {<<"elixir">>, {iex_dep, <<"elixir">>, <<"">>}, 0},
+     {<<"logger">>, {iex_dep, <<"logger">>, <<"">>}, 0},
+     {<<"mix">>, {iex_dep, <<"mix">>, <<"">>}, 0}
     ].
 
 %% @doc compiles a elixir app which is located in AppDir.
@@ -134,7 +134,11 @@ compile(AppDir) ->
                             [
                              {cd, AppDir},
                              {use_stdout, true},
-                             abort_on_error]),
+                             abort_on_error,
+                             {env, [
+                                    {"MIX_ENV", "prod"}
+                                   ]
+                             }]),
   {ok, _ } = rebar_utils:sh("mix compile",
                             [
                              {cd, AppDir},
