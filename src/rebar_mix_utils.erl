@@ -9,7 +9,7 @@
          compile/1,
          move_to_path/3,
          elixir_to_lock/1,
-         add_elixir_to_path/1,
+         add_elixir_to_build_path/1,
          delete/1
         ]).
 
@@ -94,8 +94,8 @@ add_elixir(State) ->
   State.
 
 %% @doc Add elixir to the application build path
--spec add_elixir_to_path(rebar_state:t()) -> rebar_state:t().
-add_elixir_to_path(State)->
+-spec add_elixir_to_build_path(rebar_state:t()) -> rebar_state:t().
+add_elixir_to_build_path(State)->
   LibDir = get_lib_dir(State),
   BuildPath = get_build_path(State),
 
@@ -128,7 +128,7 @@ elixir_to_lock(Lock) ->
 
 %% @doc compiles a elixir app which is located in AppDir.
 %% Crash compilation when something goes wrong.
--spec compile(string()) -> ok.
+-spec compile(string()) -> string().
 compile(AppDir) ->
   {ok, _ } = rebar_utils:sh("mix deps.get",
                             [
@@ -144,7 +144,7 @@ compile(AppDir) ->
                                     {"MIX_ENV", "prod"}
                                    ]
                              }]),
-  ok.
+  filename:join(AppDir, "_build/prod/lib/").
 
 %% @doc Moves a list of files located in Source to a
 %% new directory located in Traget.
