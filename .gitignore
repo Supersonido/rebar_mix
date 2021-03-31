@@ -1,18 +1,70 @@
-.rebar3
-_*
+
+# Created by https://www.gitignore.io/api/emacs,erlang
+# Edit at https://www.gitignore.io/?templates=emacs,erlang
+
+### Emacs ###
+# -*- mode: gitignore; -*-
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Org-mode
+.org-id-locations
+*_archive
+
+# flymake-mode
+*_flymake.*
+
+# eshell files
+/eshell/history
+/eshell/lastdir
+
+# elpa packages
+/elpa/
+
+# reftex files
+*.rel
+
+# AUCTeX auto folder
+/auto/
+
+# cask packages
+.cask/
+dist/
+
+# Flycheck
+flycheck_*.el
+
+# server auth directory
+/server/
+
+# projectiles files
+.projectile
+
+# directory configuration
+.dir-locals.el
+
+# network security
+/network-security.data
+
+
+### Erlang ###
 .eunit
+deps
 *.o
 *.beam
 *.plt
-*.swp
-*.swo
-.erlang.cookie
-ebin
-log
 erl_crash.dump
+ebin/*.beam
+rel/example_project
+.concrete/DEV_MODE
 .rebar
-logs
-_build
-.idea
-*.iml
-rebar3.crashdump
+_build/
+ebin/
+.rebar3
+# End of https://www.gitignore.io/api/emacs,erlang
