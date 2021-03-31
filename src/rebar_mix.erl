@@ -4,23 +4,24 @@
 
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
 init(State) ->
-  %% Add elixir to paths
+  %% Add elixir tu build path
   State1 = rebar_mix_utils:add_elixir(State),
   State2 = rebar_mix_utils:add_elixir_to_build_path(State1),
 
-  %% Add required resources
-  State4 = rebar_state:add_resource(State2, {iex_dep, rebar_mix_dep}),
+  %% Add rebar resources
+  State3 = rebar_state:add_resource(State2, {hex, rebar_mix_hex}),
+  State4 = rebar_state:add_resource(State3, {iex_dep, rebar_mix_dep}),
 
-  %% Add compilers
-  State5 = rebar_state:add_project_builder(State4, mix, rebar_mix_builder),
+  %% Add project builder that works with some versions of rebar3
+  State5 =
+    case erlang:function_exported(rebar_state, add_project_builder, 3) of
+      true -> rebar_state:add_project_builder(State4, mix, rebar_mix_compiler);
+      _ -> State4
+    end,
 
-  %% Add hooks
-  {ok, State6} = rebar_mix_hook:init(State5),
-  {ok, State7} = rebar_mix_elixir_finder_hook:init(State6),
-
-  %% Update release configuration
+  %% Update project release config
   LibDir = rebar_mix_utils:get_lib_dir(State5),
-  RelxConfig = rebar_state:get(State7, relx, []),
+  RelxConfig = rebar_state:get(State5, relx, []),
   NewRelxConfig =
     case lists:keyfind(lib_dirs, 1, RelxConfig) of
       {lib_dirs, OldLibDir} ->
@@ -29,5 +30,6 @@ init(State) ->
       false ->
         [{lib_dirs, [LibDir]}] ++ RelxConfig
     end,
-  State8 = rebar_state:set(State7, relx, NewRelxConfig),
-  {ok, State8}.
+  State6 = rebar_state:set(State5, relx, NewRelxConfig),
+
+  {ok, State6}.
