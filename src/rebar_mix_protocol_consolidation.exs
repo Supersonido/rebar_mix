@@ -1,6 +1,6 @@
 # rebar3 provider sets this to all deps of the project being built
-paths = String.split(System.get_env("REBAR_DEPS_EBIN"), ":")
-out_dir = System.get_env("REBAR_PROTOCOLS_OUTDIR")
+paths = String.split(System.get_env("REBAR_DEPS_EBIN", ""), ":")
+out_dir = System.get_env("REBAR_PROTOCOLS_OUTDIR", "")
 File.mkdir_p!(out_dir)
 
 # For protocol consolidation run the following script
