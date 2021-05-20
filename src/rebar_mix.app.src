@@ -9,7 +9,7 @@
   {env,[]},
   {modules, []},
 
-  {maintainers, ["Tristan Sloughter"]},
+  {maintainers, ["Tristan Sloughter", "Andres Mareca"]},
   {licenses, ["Apache 2.0"]},
-  {links, [{"Github", "https://github.com/tsloughter/rebar_mix"}]}
+  {links, [{"Github", "https://github.com/Supersonido/rebar_mix"}]}
  ]}.
