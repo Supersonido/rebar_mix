@@ -13,6 +13,11 @@
          delete/1
         ]).
 
+-ignore_xref({'Elixir.Code', eval_quoted, 2}).
+-ignore_xref({'Elixir.Code', string_to_quoted, 2}).
+-ignore_xref({'Elixir.Enum', to_list, 1}).
+-ignore_xref({'Elixir.File', read, 1}).
+
 %% @doc Convert binary() | list() | integer() | atom() to binary().
 -spec to_binary(binary() | list() | integer() | atom()) -> binary().
 to_binary(V) when is_binary(V) -> V;
@@ -117,7 +122,7 @@ add_elixir_to_build_path(State)->
   State.
 
 %% @doc Add elixir to a list of lock dependencies.
--spec elixir_to_lock(list()) -> list().
+-spec elixir_to_lock(list()) -> nonempty_list().
 elixir_to_lock(Lock) ->
   Lock ++
     [
