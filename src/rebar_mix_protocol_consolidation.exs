@@ -13,7 +13,9 @@ Enum.each(paths, fn path ->
     :code.delete(protocol)
     File.cd!(path)
     IO.puts "Consolidating #{length(impls)} implementations of protocol #{protocol}"
-    {:ok, beam} = Protocol.consolidate(protocol, impls)
-    File.write!(Path.join(out_dir, "#{protocol}.beam"), beam)
+    case Protocol.consolidate(protocol, impls) do
+      {:ok, beam} -> File.write!(Path.join(out_dir, "#{protocol}.beam"), beam)
+      _ -> IO.puts("Skipping protocol consolidation for #{protocol} due to consolidation errors.")
+    end
   end)
 end)
