@@ -45,7 +45,7 @@ do(State) ->
     %% in order to not require figuring out where Elixir lives we
     %% shell out to elixir to run an elixir script. so the only
     %% requirement is that elixir is in the path.
-    case rebar_mix_builder:sh("elixir rebar_mix_protocol_consolidation.exs",
+    case rebar_utils:sh("elixir rebar_mix_protocol_consolidation.exs",
                         [{cd, ScriptDir},
                          {return_on_error, true},
                          {use_stdout, true},

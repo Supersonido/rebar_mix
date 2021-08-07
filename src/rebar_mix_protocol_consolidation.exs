@@ -12,7 +12,7 @@ Enum.each(paths, fn path ->
     :code.purge(protocol)
     :code.delete(protocol)
     File.cd!(path)
-    IO.puts "Consolidating #{length(impls)} implementations of protocol #{protocol}"
+    IO.puts("Consolidating #{length(impls)} implementations of protocol #{protocol}")
     {:ok, beam} = Protocol.consolidate(protocol, impls)
     File.write!(Path.join(out_dir, "#{protocol}.beam"), beam)
   end)
