@@ -31,5 +31,4 @@ init(State) ->
         [{lib_dirs, [LibDir]}] ++ RelxConfig
     end,
   State6 = rebar_state:set(State5, relx, NewRelxConfig),
-
-  {ok, State6}.
+  rebar_mix_hook:init(State6).
