@@ -3,6 +3,12 @@ paths = String.split(System.get_env("REBAR_DEPS_EBIN", ""), ":")
 out_dir = System.get_env("REBAR_PROTOCOLS_OUTDIR", "")
 File.mkdir_p!(out_dir)
 
+for path <- paths do
+  path
+  |> to_charlist()
+  |> :code.add_path()
+end
+
 # For protocol consolidation run the following script
 # paths is a list of paths to dependency ebin directory
 # output is the output directory for the compiled protocol beam files
