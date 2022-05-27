@@ -65,7 +65,9 @@ create_rebar_lock_from_mix(AppDir, Deps) ->
   lists:foldl(
     fun(AppLock, Locks) ->
         case AppLock of
-          {Name, {hex, App, Version, _, _, _, _}} ->
+          {Name, Hex} when element(1, Hex) == hex ->
+            App = element(2, Hex),
+            Version = element(3, Hex),
             case lists:member(to_string(Name), Deps) of
               true ->
                 Locks ++ [{to_binary(Name), {iex_dep, to_binary(App), Version}, 0}];
